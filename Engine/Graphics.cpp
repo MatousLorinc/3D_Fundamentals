@@ -429,56 +429,84 @@ void Graphics::DrawTriangle( const Vec2& v0,const Vec2& v1,const Vec2& v2,Color 
 
 void Graphics::DrawFlatTopTriangle( const Vec2& v0,const Vec2& v1,const Vec2& v2,Color c )
 {
-	// calulcate slopes in screen space
-	float m0 = (v2.x - v0.x) / (v2.y - v0.y);
-	float m1 = (v2.x - v1.x) / (v2.y - v1.y);
-
-	// calculate start and end scanlines
-	const int yStart = (int)ceil( v0.y - 0.5f );
-	const int yEnd = (int)ceil( v2.y - 0.5f ); // the scanline AFTER the last line drawn
-
-	for( int y = yStart; y < yEnd; y++ )
+	float a		= (v2.x - v0.x) / (v2.y - v0.y);
+	float b		= (v2.x - v1.x) / (v2.y - v1.y);
+	int yStart	= (int)ceil(v0.y - 0.5f);
+	int yEnd	= (int)ceil(v2.y - 0.5f);
+	for (int y = yStart; y < yEnd; y++)
 	{
-		// caluclate start and end points (x-coords)
-		// add 0.5 to y value because we're calculating based on pixel CENTERS
-		const float px0 = m0 * (float( y ) + 0.5f - v0.y) + v0.x;
-		const float px1 = m1 * (float( y ) + 0.5f - v1.y) + v1.x;
-
-		// calculate start and end pixels
-		const int xStart = (int)ceil( px0 - 0.5f );
-		const int xEnd = (int)ceil( px1 - 0.5f ); // the pixel AFTER the last pixel drawn
-
-		for( int x = xStart; x < xEnd; x++ )
+		int xStart = (int)ceil((a * (y + 0.5f - v0.y) + v0.x) - 0.5f);
+		int xEnd = (int)ceil((b * (y + 0.5f - v1.y) + v1.x) - 0.5f);
+		for (int x = xStart; x < xEnd; x++)
 		{
-			PutPixel( x,y,c );
+			PutPixel(x, y, c);
 		}
 	}
+
+	//// calulcate slopes in screen space
+	//float m0 = (v2.x - v0.x) / (v2.y - v0.y);
+	//float m1 = (v2.x - v1.x) / (v2.y - v1.y);
+
+	//// calculate start and end scanlines
+	//const int yStart = (int)ceil( v0.y - 0.5f );
+	//const int yEnd = (int)ceil( v2.y - 0.5f ); // the scanline AFTER the last line drawn
+
+	//for( int y = yStart; y < yEnd; y++ )
+	//{
+	//	// caluclate start and end points (x-coords)
+	//	// add 0.5 to y value because we're calculating based on pixel CENTERS
+	//	const float px0 = m0 * (y + 0.5f - v0.y) + v0.x;
+	//	const float px1 = m1 * (y + 0.5f - v1.y) + v1.x;
+
+	//	// calculate start and end pixels
+	//	const int xStart = (int)ceil( px0 - 0.5f );
+	//	const int xEnd = (int)ceil( px1 - 0.5f ); // the pixel AFTER the last pixel drawn
+
+	//	for( int x = xStart; x < xEnd; x++ )
+	//	{
+	//		PutPixel( x,y,c );
+	//	}
+	//}
 }
 
 void Graphics::DrawFlatBottomTriangle( const Vec2& v0,const Vec2& v1,const Vec2& v2,Color c )
 {
-	// calulcate slopes in screen space
-	float m0 = (v1.x - v0.x) / (v1.y - v0.y);
-	float m1 = (v2.x - v0.x) / (v2.y - v0.y);
+	float a = (v1.x - v0.x) / (v1.y - v0.y);
+	float b = (v2.x - v0.x) / (v2.y - v0.y);
+	int yStart = (int)ceil(v0.y - 0.5f);
+	int yEnd = (int)ceil(v2.y - 0.5f);
 
-	// calculate start and end scanlines
-	const int yStart = (int)ceil( v0.y - 0.5f );
-	const int yEnd = (int)ceil( v2.y - 0.5f ); // the scanline AFTER the last line drawn
-
-	for( int y = yStart; y < yEnd; y++ )
+	for (int y = yStart; y < yEnd; y++)
 	{
-		// caluclate start and end points
-		// add 0.5 to y value because we're calculating based on pixel CENTERS
-		const float px0 = m0 * (float( y ) + 0.5f - v0.y) + v0.x;
-		const float px1 = m1 * (float( y ) + 0.5f - v0.y) + v0.x;
-
-		// calculate start and end pixels
-		const int xStart = (int)ceil( px0 - 0.5f );
-		const int xEnd = (int)ceil( px1 - 0.5f ); // the pixel AFTER the last pixel drawn
-
-		for( int x = xStart; x < xEnd; x++ )
+		int xStart = (int)ceil((a * (y + 0.5f - v0.y) + v0.x) - 0.5f);
+		int xEnd = (int)ceil((b * (y + 0.5f - v0.y) + v0.x) - 0.5f);
+		for (int x = xStart; x < xEnd; x++)
 		{
-			PutPixel( x,y,c );
+			PutPixel(x, y, c);
 		}
 	}
+	//// calulcate slopes in screen space
+	//float m0 = (v1.x - v0.x) / (v1.y - v0.y);
+	//float m1 = (v2.x - v0.x) / (v2.y - v0.y);
+
+	//// calculate start and end scanlines
+	//const int yStart = (int)ceil( v0.y - 0.5f );
+	//const int yEnd = (int)ceil( v2.y - 0.5f ); // the scanline AFTER the last line drawn
+
+	//for( int y = yStart; y < yEnd; y++ )
+	//{
+	//	// caluclate start and end points
+	//	// add 0.5 to y value because we're calculating based on pixel CENTERS
+	//	const float px0 = m0 * (float( y ) + 0.5f - v0.y) + v0.x;
+	//	const float px1 = m1 * (float( y ) + 0.5f - v0.y) + v0.x;
+
+	//	// calculate start and end pixels
+	//	const int xStart = (int)ceil( px0 - 0.5f );
+	//	const int xEnd = (int)ceil( px1 - 0.5f ); // the pixel AFTER the last pixel drawn
+
+	//	for( int x = xStart; x < xEnd; x++ )
+	//	{
+	//		PutPixel( x,y,c );
+	//	}
+	//}
 }
