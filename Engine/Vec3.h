@@ -57,6 +57,13 @@ public:
 		z /= length;
 		return *this;
 	}
+	_Vec3	CrossProduct(_Vec3& rhs)
+	{
+		return _Vec3(
+			y * rhs.z - z * rhs.y,
+			z * rhs.x - x * rhs.z,
+			x * rhs.y - y * rhs.x);
+	}
 	_Vec3	GetNormalized() const
 	{
 		_Vec3 norm = *this;

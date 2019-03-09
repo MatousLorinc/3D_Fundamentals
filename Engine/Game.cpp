@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	cube( 1.0f )
+	model("model.obj")
 {
 }
 
@@ -91,47 +91,54 @@ void Game::ComposeFrame()
 		Colors::Blue,
 		Colors::Cyan
 	};
-	// generate indexed triangle list
-	auto triangles = cube.GetTriangles();
+	// copy vertices and normals from model
+	std::vector<Vec3> vertices = model.vertices;
+	std::vector<Vec3> normals = model.normals;
+	Vec3 offSet = { 0.0f,0.0f,offset_z + 5.f };
 	// generate rotation matrix from euler angles
 	const Mat3 rot =
 		Mat3::RotationX( theta_x ) *
 		Mat3::RotationY( theta_y ) *
 		Mat3::RotationZ( theta_z );
-	// transform from model space -> world (/view) space
-	for( auto& v : triangles.vertices )
+	// transform vertices from model space -> world (/view) space
+	for( auto& v : vertices )
 	{
 		v *= rot;
-		v += { 0.0f,0.0f,offset_z };
+		v += offSet;
+	}
+	// transform normals from model space -> world (/view) space
+	for (auto& vn : normals)
+	{
+		vn *= rot;
 	}
 	// backface culling test (must be done in world (/view) space)
-	for( size_t i = 0,
-		 end = triangles.indices.size() / 3;
-		 i < end; i++ )
+	for( int i = 0; i < model.triangles.size(); i++ )
 	{
-		const Vec3& v0 = triangles.vertices[triangles.indices[i * 3]];
-		const Vec3& v1 = triangles.vertices[triangles.indices[i * 3 + 1]];
-		const Vec3& v2 = triangles.vertices[triangles.indices[i * 3 + 2]];
-		triangles.cullFlags[i] = (v1 - v0) % (v2 - v0) * v0 > 0.0f;
+		const Vec3& v0 = vertices[model.triangles[i].v0];
+		const Vec3& v1 = vertices[model.triangles[i].v1];
+		const Vec3& v2 = vertices[model.triangles[i].v2];
+		const Vec3& vn = normals[model.triangles[i].vn];
+		//Vec3 calculatedNormal = (v1 - v0).CrossProduct((v2 - v0));
+		model.triangles[i].cullFlag = vn * v0 > 0.0f;
 	}
 	// transform to screen space (includes perspective transform)
-	for( auto& v : triangles.vertices )
+	for( auto& v : vertices )
 	{
 		pst.Transform( v );
 	}
-	// draw the mf triangles!
-	for( size_t i = 0,
-		 end = triangles.indices.size() / 3;
-		 i < end; i++ )
+	for (int i = 0; i < model.triangles.size(); i++)
 	{
+		const Vec3& v0 = vertices[model.triangles[i].v0];
+		const Vec3& v1 = vertices[model.triangles[i].v1];
+		const Vec3& v2 = vertices[model.triangles[i].v2];
+		const Vec3& vn = vertices[model.triangles[i].vn];
+
+		float scalar = vn * v0;
 		// skip triangles previously determined to be back-facing
-		if( !triangles.cullFlags[i] )
+		if(!model.triangles[i].cullFlag)
 		{
-			gfx.DrawTriangle( 
-				triangles.vertices[triangles.indices[i * 3]],
-				triangles.vertices[triangles.indices[i * 3 + 1]],
-				triangles.vertices[triangles.indices[i * 3 + 2]],
-				colors[i] );
+
+			gfx.DrawTriangle(v0,v1,v2,colors[i] );
 		}
 	}
 }

@@ -23,6 +23,7 @@
 #include "Graphics.h"
 #include "PubeScreenTransformer.h"
 #include "Cube.h"
+#include "Model.h"
 
 class Game
 {
@@ -43,7 +44,7 @@ private:
 	/********************************/
 	/*  User Variables              */
 	PubeScreenTransformer pst;
-	Cube cube;
+	Model model;
 	static constexpr float dTheta = PI;
 	float offset_z = 2.0f;
 	float theta_x = 0.0f;
