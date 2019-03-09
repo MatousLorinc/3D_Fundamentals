@@ -26,7 +26,7 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	model("model.obj")
+	model("cube.obj")
 {
 }
 
@@ -118,7 +118,6 @@ void Game::ComposeFrame()
 		const Vec3& v1 = vertices[model.triangles[i].v1];
 		const Vec3& v2 = vertices[model.triangles[i].v2];
 		const Vec3& vn = normals[model.triangles[i].vn];
-		//Vec3 calculatedNormal = (v1 - v0).CrossProduct((v2 - v0));
 		model.triangles[i].cullFlag = vn * v0 > 0.0f;
 	}
 	// transform to screen space (includes perspective transform)
@@ -137,7 +136,6 @@ void Game::ComposeFrame()
 		// skip triangles previously determined to be back-facing
 		if(!model.triangles[i].cullFlag)
 		{
-
 			gfx.DrawTriangle(v0,v1,v2,colors[i] );
 		}
 	}

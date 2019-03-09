@@ -7,5 +7,8 @@ public:
 	V v1;
 	V v2;
 	V vn;
+	V vt0;
+	V vt1;
+	V vt2;
 	bool cullFlag;
 };
