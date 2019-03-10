@@ -26,7 +26,8 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	model("cube.obj")
+	model("resources\\cube.obj"),
+	sbTex(Surface::FromFile(L"resources\\cube_albedo_tex.png"))
 {
 }
 
@@ -91,17 +92,28 @@ void Game::ComposeFrame()
 		Colors::Blue,
 		Colors::Cyan
 	};
+
+	// for white background
+	//for (int x = 0; x < Graphics::ScreenWidth; x++)
+	//{
+	//	for (int y = 0; y < Graphics::ScreenHeight; y++)
+	//	{
+	//		gfx.PutPixel(x, y, Colors::White);
+	//	}
+	//}
+
 	// copy vertices and normals from model
 	std::vector<Vec3> vertices = model.vertices;
 	std::vector<Vec3> normals = model.normals;
-	Vec3 offSet = { 0.0f,0.0f,offset_z + 5.f };
+	std::vector<Vec2> textureVertices = model.textureVertices;
+	Vec3 offSet = { 0.0f,0.0f,offset_z + 2.f };
 	// generate rotation matrix from euler angles
 	const Mat3 rot =
-		Mat3::RotationX( theta_x ) *
-		Mat3::RotationY( theta_y ) *
-		Mat3::RotationZ( theta_z );
+		Mat3::RotationX(theta_x) *
+		Mat3::RotationY(theta_y) *
+		Mat3::RotationZ(theta_z);
 	// transform vertices from model space -> world (/view) space
-	for( auto& v : vertices )
+	for (auto& v : vertices)
 	{
 		v *= rot;
 		v += offSet;
@@ -112,7 +124,7 @@ void Game::ComposeFrame()
 		vn *= rot;
 	}
 	// backface culling test (must be done in world (/view) space)
-	for( int i = 0; i < model.triangles.size(); i++ )
+	for (int i = 0; i < model.triangles.size(); i++)
 	{
 		const Vec3& v0 = vertices[model.triangles[i].v0];
 		const Vec3& v1 = vertices[model.triangles[i].v1];
@@ -120,23 +132,28 @@ void Game::ComposeFrame()
 		const Vec3& vn = normals[model.triangles[i].vn];
 		model.triangles[i].cullFlag = vn * v0 > 0.0f;
 	}
-	// transform to screen space (includes perspective transform)
-	for( auto& v : vertices )
+	for (auto& v : vertices)
 	{
-		pst.Transform( v );
+		pst.Transform(v);
 	}
+
 	for (int i = 0; i < model.triangles.size(); i++)
 	{
 		const Vec3& v0 = vertices[model.triangles[i].v0];
 		const Vec3& v1 = vertices[model.triangles[i].v1];
 		const Vec3& v2 = vertices[model.triangles[i].v2];
-		const Vec3& vn = vertices[model.triangles[i].vn];
+		const Vec2& vt0 = textureVertices[model.triangles[i].vt0];
+		const Vec2& vt1 = textureVertices[model.triangles[i].vt1];
+		const Vec2& vt2 = textureVertices[model.triangles[i].vt2];
 
-		float scalar = vn * v0;
 		// skip triangles previously determined to be back-facing
 		if(!model.triangles[i].cullFlag)
 		{
-			gfx.DrawTriangle(v0,v1,v2,colors[i] );
+			//gfx.DrawTriangle(v0,v1,v2,colors[i] );
+			TexVertex tv0 = TexVertex(v0, vt0);
+			TexVertex tv1 = TexVertex(v1, vt1);
+			TexVertex tv2 = TexVertex(v2, vt2);
+			gfx.DrawTriangleTex(tv0, tv1, tv2, sbTex);
 		}
 	}
 }

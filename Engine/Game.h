@@ -45,6 +45,7 @@ private:
 	/*  User Variables              */
 	PubeScreenTransformer pst;
 	Model model;
+	Surface sbTex;
 	static constexpr float dTheta = PI;
 	float offset_z = 2.0f;
 	float theta_x = 0.0f;

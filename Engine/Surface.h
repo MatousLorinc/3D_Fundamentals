@@ -39,63 +39,63 @@ public:
 		virtual std::wstring GetExceptionType() const override { return L"Surface Exception"; }
 	};
 public:
-	Surface( unsigned int width,unsigned int height,unsigned int pitch )
+	Surface(unsigned int width, unsigned int height, unsigned int pitch)
 		:
-		pBuffer( std::make_unique<Color[]>( pitch * height ) ),
-		width( width ),
-		height( height ),
-		pitch( pitch )
+		pBuffer(std::make_unique<Color[]>(pitch * height)),
+		width(width),
+		height(height),
+		pitch(pitch)
 	{}
-	Surface( unsigned int width,unsigned int height )
+	Surface(unsigned int width, unsigned int height)
 		:
-		Surface( width,height,width )
+		Surface(width, height, width)
 	{}
-	Surface( Surface&& source )
+	Surface(Surface&& source)
 		:
-		pBuffer( std::move( source.pBuffer ) ),
-		width( source.width ),
-		height( source.height ),
-		pitch( source.pitch )
+		pBuffer(std::move(source.pBuffer)),
+		width(source.width),
+		height(source.height),
+		pitch(source.pitch)
 	{}
-	Surface( Surface& ) = delete;
-	Surface& operator=( Surface&& donor )
+	Surface(Surface&) = delete;
+	Surface& operator=(Surface&& donor)
 	{
 		width = donor.width;
 		height = donor.height;
 		pitch = donor.pitch;
-		pBuffer = std::move( donor.pBuffer );
+		pBuffer = std::move(donor.pBuffer);
 		donor.pBuffer = nullptr;
 		return *this;
 	}
-	Surface& operator=( const Surface& ) = delete;
+	Surface& operator=(const Surface&) = delete;
 	~Surface()
 	{}
-	void Clear( Color fillValue  )
+	void Clear(Color fillValue)
 	{
-		memset( pBuffer.get(),fillValue.dword,pitch * height * sizeof( Color ) );
+		memset(pBuffer.get(), fillValue.dword, pitch * height * sizeof(Color));
 	}
-	void Present( unsigned int dstPitch,BYTE* const pDst ) const
+	void Present(unsigned int dstPitch, BYTE* const pDst) const
 	{
-		for( unsigned int y = 0; y < height; y++ )
+		for (unsigned int y = 0; y < height; y++)
 		{
-			memcpy( &pDst[dstPitch * y],&pBuffer[pitch * y],sizeof(Color) * width );
+			memcpy(&pDst[dstPitch * y], &pBuffer[pitch * y], sizeof(Color) * width);
 		}
 	}
-	void PutPixel( unsigned int x,unsigned int y,Color c )
+	void PutPixel(unsigned int x, unsigned int y, Color c)
 	{
-		assert( x >= 0 );
-		assert( y >= 0 );
-		assert( x < width );
-		assert( y < height );
+		assert(x >= 0);
+		assert(y >= 0);
+		assert(x < width);
+		assert(y < height);
 		pBuffer[y * pitch + x] = c;
 	}
-	void PutPixelAlpha( unsigned int x,unsigned int y,Color c );
-	Color GetPixel( unsigned int x,unsigned int y ) const
+	void PutPixelAlpha(unsigned int x, unsigned int y, Color c);
+	Color GetPixel(unsigned int x, unsigned int y) const
 	{
-		assert( x >= 0 );
-		assert( y >= 0 );
-		assert( x < width );
-		assert( y < height );
+		assert(x >= 0);
+		assert(y >= 0);
+		assert(x < width);
+		assert(y < height);
 		return pBuffer[y * pitch + x];
 	}
 	unsigned int GetWidth() const
@@ -118,23 +118,23 @@ public:
 	{
 		return pBuffer.get();
 	}
-	static Surface FromFile( const std::wstring& name );
-	void Save( const std::wstring& filename ) const;
-	void Copy( const Surface& src );
+	static Surface FromFile(const std::wstring& name);
+	void Save(const std::wstring& filename) const;
+	void Copy(const Surface& src);
 private:
 	// calculate pixel pitch required for given byte aligment (must be multiple of 4 bytes)
-	static unsigned int GetPitch( unsigned int width,unsigned int byteAlignment )
+	static unsigned int GetPitch(unsigned int width, unsigned int byteAlignment)
 	{
-		assert( byteAlignment % 4 == 0 );
-		const unsigned int pixelAlignment = byteAlignment / sizeof( Color );
-		return width + ( pixelAlignment - width % pixelAlignment ) % pixelAlignment;
+		assert(byteAlignment % 4 == 0);
+		const unsigned int pixelAlignment = byteAlignment / sizeof(Color);
+		return width + (pixelAlignment - width % pixelAlignment) % pixelAlignment;
 	}
-	Surface( unsigned int width,unsigned int height,unsigned int pitch,std::unique_ptr<Color[]> pBufferParam )
+	Surface(unsigned int width, unsigned int height, unsigned int pitch, std::unique_ptr<Color[]> pBufferParam)
 		:
-		width( width ),
-		height( height ),
-		pBuffer( std::move( pBufferParam ) ),
-		pitch( pitch )
+		width(width),
+		height(height),
+		pBuffer(std::move(pBufferParam)),
+		pitch(pitch)
 	{}
 private:
 	std::unique_ptr<Color[]> pBuffer;

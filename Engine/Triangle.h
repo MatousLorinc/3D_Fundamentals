@@ -1,14 +1,13 @@
 #pragma once
-template<class V>
 class Triangle
 {
 public:
-	V v0;
-	V v1;
-	V v2;
-	V vn;
-	V vt0;
-	V vt1;
-	V vt2;
+	int v0;
+	int v1;
+	int v2;
+	int vn;
+	int vt0;
+	int vt1;
+	int vt2;
 	bool cullFlag;
 };

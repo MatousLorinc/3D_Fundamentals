@@ -1,6 +1,6 @@
 #include "Model.h"
 
-Model::Model(std::vector<Vec3> vertices, std::vector<Vec3> normals, std::vector<Triangle<int>> triangles) :
+Model::Model(std::vector<Vec3> vertices, std::vector<Vec3> normals, std::vector<Triangle> triangles) :
 	vertices(vertices),
 	normals(normals),
 	triangles(triangles)

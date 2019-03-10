@@ -10,14 +10,14 @@
 class Model
 {
 public:
-	Model(std::vector<Vec3> vertices, std::vector<Vec3> normals, std::vector<Triangle<int>> triangles);
+	Model(std::vector<Vec3> vertices, std::vector<Vec3> normals, std::vector<Triangle> triangles);
 	Model(std::string filePath);
 	void ConsoleDebug();
 	~Model();
 	std::vector<Vec3> vertices;
 	std::vector<Vec2> textureVertices;
 	std::vector<Vec3> normals;
-	std::vector<Triangle<int>> triangles;
+	std::vector<Triangle> triangles;
 private:
 	Vec3 MakeVec3FromLine(std::string& line);
 	Vec2 MakeVec2FromLine(std::string& line);
