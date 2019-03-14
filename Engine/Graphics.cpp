@@ -627,17 +627,22 @@ void Graphics::DrawFlatTriangleTex(const TexVertex& v0, const TexVertex& v1, con
 		const int xStart = (int)ceil(itEdge0.pos.x - 0.5f);
 		const int xEnd = (int)ceil(itEdge1.pos.x - 0.5f); // the pixel AFTER the last pixel drawn
 
-		// calculate scanline dTexCoord / dx
-		const Vec2 dtcLine = (itEdge1.tc - itEdge0.tc) / (itEdge1.pos.x - itEdge0.pos.x);
+		auto iLine = itEdge0;
 
-		// create scanline tex coord interpolant and prestep
-		Vec2 itcLine = itEdge0.tc + dtcLine * (float(xStart) + 0.5f - itEdge0.pos.x);
+		// calculate delta scanline interpolant / dx
+		const float dx = itEdge1.pos.x - itEdge0.pos.x;
+		const auto diLine = (itEdge1 - iLine) / dx;
 
-		for (int x = xStart; x < xEnd; x++, itcLine += dtcLine)
+		// prestep scanline interpolant
+		iLine += diLine * (float(xStart) + 0.5f - itEdge0.pos.x);
+
+		for (int x = xStart; x < xEnd; x++, iLine += diLine)
 		{
+			const float z = 1.0f / iLine.pos.z;
+
 			PutPixel(x, y, tex.GetPixel(
-				int(std::min(itcLine.x * tex_width, tex_clamp_x)),
-				int(std::min(itcLine.y * tex_height, tex_clamp_y))));
+				int(std::min(iLine.tc.x *z* tex_width, tex_clamp_x)),
+				int(std::min(iLine.tc.y *z* tex_height, tex_clamp_y))));
 			// need std::min b/c tc.x/y == 1.0, we'll read off edge of tex
 			// and with fp err, tc.x/y can be > 1.0 (by a tiny amount)
 		}
@@ -699,16 +704,25 @@ void Graphics::DrawFlatTriangleTexWrap(const TexVertex& v0, const TexVertex& v1,
 		const int xEnd = (int)ceil(itEdge1.pos.x - 0.5f); // the pixel AFTER the last pixel drawn
 
 															// calculate scanline dTexCoord / dx
-		const Vec2 dtcLine = (itEdge1.tc - itEdge0.tc) / (itEdge1.pos.x - itEdge0.pos.x);
+		TexVertex iLine = itEdge0;
 
-		// create scanline tex coord interpolant and prestep
-		Vec2 itcLine = itEdge0.tc + dtcLine * (float(xStart) + 0.5f - itEdge0.pos.x);
+		// calculate delta scanline interpolant / dx
+		const float dx = itEdge1.pos.x - itEdge0.pos.x;
+		const TexVertex diLine = (itEdge1 - iLine) / dx;
 
-		for (int x = xStart; x < xEnd; x++, itcLine += dtcLine)
+		// prestep scanline interpolant
+		iLine += diLine * (float(xStart) + 0.5f - itEdge0.pos.x);
+
+		for (int x = xStart; x < xEnd; x++, iLine += diLine)
 		{
-			PutPixel(x, y, tex.GetPixel(
-				int(std::fmod(itcLine.x * tex_width, tex_clamp_x)),
-				int(std::fmod(itcLine.y * tex_height, tex_clamp_y))));
+			const float z = 1.0f / iLine.pos.z;
+
+			PutPixel(x, y, tex.GetPixel(iLine.tc.x *z* tex_width,
+				iLine.tc.y *z* tex_height));
+
+			//PutPixel(x, y, tex.GetPixel(
+			//	int(std::fmod(iLine.tc.x *z* tex_width, tex_clamp_x)),
+			//	int(std::fmod(iLine.tc.y *z* tex_height, tex_clamp_y))));
 			// need std::min b/c tc.x/y == 1.0, we'll read off edge of tex
 			// and with fp err, tc.x/y can be > 1.0 (by a tiny amount)
 		}

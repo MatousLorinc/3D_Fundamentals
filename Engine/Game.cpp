@@ -26,8 +26,13 @@ Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
 	gfx( wnd ),
-	model("resources\\cube.obj"),
-	sbTex(Surface::FromFile(L"resources\\cube_albedo_tex.png"))
+	//model("resources\\cube.obj"),
+	//model("resources\\ico_sphere.obj"),
+	model("resources\\cube_one_side_tex.obj"),
+	//sbTex(Surface::FromFile(L"resources\\cube_albedo_tex.png"))
+	//sbTex(Surface::FromFile(L"resources\\smile_albido_tex.png"))
+	//sbTex(Surface::FromFile(L"resources\\wood.jpg"))
+	sbTex(Surface::FromFile(L"resources\\grid_tex.jpg"))
 {
 }
 
@@ -93,7 +98,7 @@ void Game::ComposeFrame()
 		Colors::Cyan
 	};
 
-	// for white background
+	//// for white background
 	//for (int x = 0; x < Graphics::ScreenWidth; x++)
 	//{
 	//	for (int y = 0; y < Graphics::ScreenHeight; y++)
@@ -132,10 +137,6 @@ void Game::ComposeFrame()
 		const Vec3& vn = normals[model.triangles[i].vn];
 		model.triangles[i].cullFlag = vn * v0 > 0.0f;
 	}
-	for (auto& v : vertices)
-	{
-		pst.Transform(v);
-	}
 
 	for (int i = 0; i < model.triangles.size(); i++)
 	{
@@ -153,6 +154,10 @@ void Game::ComposeFrame()
 			TexVertex tv0 = TexVertex(v0, vt0);
 			TexVertex tv1 = TexVertex(v1, vt1);
 			TexVertex tv2 = TexVertex(v2, vt2);
+			pst.TransformTexVertex(tv0);
+			pst.TransformTexVertex(tv1);
+			pst.TransformTexVertex(tv2);
+
 			gfx.DrawTriangleTex(tv0, tv1, tv2, sbTex);
 		}
 	}
