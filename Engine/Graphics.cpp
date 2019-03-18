@@ -41,7 +41,8 @@ using Microsoft::WRL::ComPtr;
 
 Graphics::Graphics(HWNDKey& key)
 	:
-	sysBuffer(ScreenWidth, ScreenHeight)
+	sysBuffer(ScreenWidth, ScreenHeight),
+	zBuffer(ScreenWidth,ScreenHeight)
 {
 	assert(key.hWnd != nullptr);
 
@@ -284,6 +285,7 @@ void Graphics::EndFrame()
 void Graphics::BeginFrame()
 {
 	sysBuffer.Clear(Colors::Red);
+	zBuffer.Clear();
 }
 
 
@@ -627,11 +629,11 @@ void Graphics::DrawFlatTriangleTex(const TexVertex& v0, const TexVertex& v1, con
 		const int xStart = (int)ceil(itEdge0.pos.x - 0.5f);
 		const int xEnd = (int)ceil(itEdge1.pos.x - 0.5f); // the pixel AFTER the last pixel drawn
 
-		auto iLine = itEdge0;
+		TexVertex iLine = itEdge0;
 
 		// calculate delta scanline interpolant / dx
 		const float dx = itEdge1.pos.x - itEdge0.pos.x;
-		const auto diLine = (itEdge1 - iLine) / dx;
+		const TexVertex diLine = (itEdge1 - iLine) / dx;
 
 		// prestep scanline interpolant
 		iLine += diLine * (float(xStart) + 0.5f - itEdge0.pos.x);
@@ -639,12 +641,14 @@ void Graphics::DrawFlatTriangleTex(const TexVertex& v0, const TexVertex& v1, con
 		for (int x = xStart; x < xEnd; x++, iLine += diLine)
 		{
 			const float z = 1.0f / iLine.pos.z;
-
-			PutPixel(x, y, tex.GetPixel(
-				int(std::min(iLine.tc.x *z* tex_width, tex_clamp_x)),
-				int(std::min(iLine.tc.y *z* tex_height, tex_clamp_y))));
-			// need std::min b/c tc.x/y == 1.0, we'll read off edge of tex
-			// and with fp err, tc.x/y can be > 1.0 (by a tiny amount)
+			if (zBuffer.TestAndSet(x, y, z))
+			{
+				PutPixel(x, y, tex.GetPixel(
+					int(std::min(iLine.tc.x *z* tex_width, tex_clamp_x)),
+					int(std::min(iLine.tc.y *z* tex_height, tex_clamp_y))));
+				// need std::min b/c tc.x/y == 1.0, we'll read off edge of tex
+				// and with fp err, tc.x/y can be > 1.0 (by a tiny amount)
+			}
 		}
 	}
 }

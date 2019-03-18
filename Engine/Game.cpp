@@ -28,11 +28,13 @@ Game::Game( MainWindow& wnd )
 	gfx( wnd ),
 	//model("resources\\cube.obj"),
 	//model("resources\\ico_sphere.obj"),
-	model("resources\\cube_one_side_tex.obj"),
+	//model("resources\\cube_one_side_tex.obj"),
+	model("resources\\intersecting_planes.obj"),
 	//sbTex(Surface::FromFile(L"resources\\cube_albedo_tex.png"))
 	//sbTex(Surface::FromFile(L"resources\\smile_albido_tex.png"))
 	//sbTex(Surface::FromFile(L"resources\\wood.jpg"))
-	sbTex(Surface::FromFile(L"resources\\grid_tex.jpg"))
+	//sbTex(Surface::FromFile(L"resources\\grid_tex.jpg"))
+	sbTex(Surface::FromFile(L"resources\\intersecting_planes_tex.png"))
 {
 }
 
@@ -98,7 +100,7 @@ void Game::ComposeFrame()
 		Colors::Cyan
 	};
 
-	//// for white background
+	 ////for white background
 	//for (int x = 0; x < Graphics::ScreenWidth; x++)
 	//{
 	//	for (int y = 0; y < Graphics::ScreenHeight; y++)

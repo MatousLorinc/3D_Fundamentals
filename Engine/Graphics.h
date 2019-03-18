@@ -27,6 +27,7 @@
 #include "Colors.h"
 #include "Vec2.h"
 #include "TexVertex.h"
+#include "ZBuffer.h"
 
 #define CHILI_GFX_EXCEPTION( hr,note ) Graphics::Exception( hr,note,_CRT_WIDE(__FILE__),__LINE__ )
 
@@ -100,6 +101,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>			pSamplerState;
 	D3D11_MAPPED_SUBRESOURCE							mappedSysBufferTexture;
 	Surface												sysBuffer;
+	ZBuffer												zBuffer;
 public:
 	static constexpr unsigned int ScreenWidth = 640u;
 	static constexpr unsigned int ScreenHeight = 640u;
