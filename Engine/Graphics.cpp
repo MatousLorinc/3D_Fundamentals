@@ -42,7 +42,9 @@ using Microsoft::WRL::ComPtr;
 Graphics::Graphics(HWNDKey& key)
 	:
 	sysBuffer(ScreenWidth, ScreenHeight),
-	zBuffer(ScreenWidth,ScreenHeight)
+	zBuffer(ScreenWidth, ScreenHeight),
+	directionalLightIntensity(1.f),
+	ambientLightIntensity(0.1f)
 {
 	assert(key.hWnd != nullptr);
 
@@ -643,9 +645,19 @@ void Graphics::DrawFlatTriangleTex(const TexVertex& v0, const TexVertex& v1, con
 			const float z = 1.0f / iLine.pos.z;
 			if (zBuffer.TestAndSet(x, y, z))
 			{
-				PutPixel(x, y, tex.GetPixel(
+				float dl = directionalLightIntensity;
+				const float al = ambientLightIntensity;
+				Color c = tex.GetPixel(
 					int(std::min(iLine.tc.x *z* tex_width, tex_clamp_x)),
-					int(std::min(iLine.tc.y *z* tex_height, tex_clamp_y))));
+					int(std::min(iLine.tc.y *z* tex_height, tex_clamp_y)));
+
+				unsigned char r = unsigned char(std::min(c.GetR()*dl + c.GetR()*al, 255.f));
+				unsigned char g = unsigned char(std::min(c.GetG()*dl + c.GetG()*al, 255.f));
+				unsigned char b = unsigned char(std::min(c.GetB()*dl + c.GetB()*al, 255.f));
+
+				Color lc = (r << 16)  | (g << 8)  | b;
+
+				PutPixel(x, y, lc);
 				// need std::min b/c tc.x/y == 1.0, we'll read off edge of tex
 				// and with fp err, tc.x/y can be > 1.0 (by a tiny amount)
 			}

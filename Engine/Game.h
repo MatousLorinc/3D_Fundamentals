@@ -51,5 +51,7 @@ private:
 	float theta_x = 0.0f;
 	float theta_y = 0.0f;
 	float theta_z = 0.0f;
+	//Game.h
+	Vec3 light = { -0.5,-0.5,-0.5 };
 	/********************************/
 };
