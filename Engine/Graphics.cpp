@@ -333,6 +333,91 @@ std::wstring Graphics::Exception::GetExceptionType() const
 	return L"Chili Graphics Exception";
 }
 
+
+void Graphics::DrawLineBresenham(float x0, float y0, float x1, float y1, Color c)
+{
+	const float dx = x1 - x0;
+	const float dy = y1 - y0;
+	//if (dx == 0.0f)
+	//{
+	//	if (dy == 0.0f)
+	//		PutPixel(int(x0), int(y0), c);
+	//	else
+	//		for (float y = y0; y < y1; y += 1.0f)
+	//			PutPixel(int(x0), int(y), c);
+	//}
+	//else if(dy == 0.0f)
+	//	for (float x = x0; x < x1; x += 1.0f)
+	//		PutPixel(int(x), int(y0), c);
+	//else
+	//{
+		const float de = abs(dy/dx);
+		float error = 0.f;
+		int y = y0;
+		for (float x = x0; x < x1; x += 1.0f)
+		{
+			PutPixel(int(x), int(y), c);
+			error += de;
+			if (error >= 0.5f)
+			{
+				if (dy > 0)
+					y += de;
+				else
+					y -= de;
+				error -= 1.0f;
+			}
+		}
+	//}
+}
+
+void Graphics::DrawLineBresenhamBot(float x0, float y0, float x1, float y1 ,Color c)
+{
+	const float dx = x1 - x0;
+	float dy = y1 - y0;
+	float yi = 1;
+	if (dy < 0)
+	{
+		yi = -1;
+		dy = -dy;
+	}
+	float D = 2 * dy - dx;
+	float y = y0;
+	for (float x = x0; x < x1; x += 1.0f)
+	{
+		PutPixel(int(x), int(y), c);
+		if (D > 0)
+		{
+			y += yi;
+			D = D - 2 * dx;
+		}
+		D = D + 2 * dy;
+	}
+}
+
+void Graphics::DrawLineBresenhamTop(float x0, float y0, float x1, float y1, Color c)
+{
+	float dx = x1 - x0;
+	const float dy = y1 - y0;
+	float xi = 1;
+	if (dx < 0)
+	{
+		xi = -1;
+		dx = -dx;
+	}
+	float D = 2 * dx - dy;
+	float x = x0;
+	for (float y = y0; y < y1; y += 1.0f)
+	{
+		PutPixel(int(x), int(y), c);
+		if (D > 0)
+		{
+			x += xi;
+			D = D - 2 * dy;
+		}
+		D = D + 2 * dx;
+	}
+}
+
 void Graphics::DrawLine(float x1, float y1, float x2, float y2, Color c)
 {
 	const float dx = x2 - x1;

@@ -139,6 +139,11 @@ void Game::UpdateModel()
 
 void Game::ComposeFrame()
 {
+
+	//a = Vec2(200, 200);
+	//b = Vec2(wnd.mouse.GetPos());
+	//gfx.DrawLineBresenham(a, b, Colors::Red);
+
 	const Color colors[12] = {
 		Colors::White,
 		Colors::Blue,
